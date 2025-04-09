@@ -1,4 +1,4 @@
-import "../styles/home.css";
+import "../styles/Home.css";
 import Left from "../component/Header/Left";
 import Middle from "../component/Header/Middle";
 import Right from "../component/Header/Right";
