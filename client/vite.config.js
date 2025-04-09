@@ -6,6 +6,11 @@ export default defineConfig({
   server: {
     port: process.env.PORT || 5173,
     host: true,
-    allowedHosts: ['msn-clone-frontend.onrender.com'] //for Render.com
+    allowedHosts: ['msn-clone-frontend.onrender.com', 'msn-clone.onrender.com'],
+  },
+  preview: {
+    port: process.env.PORT || 4173,
+    host: true,
+    allowedHosts: ['msn-clone-frontend.onrender.com', 'msn-clone.onrender.com'],
   }
 })
