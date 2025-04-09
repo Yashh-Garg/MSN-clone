@@ -14,6 +14,9 @@ app.use(express.json());
 
 app.use("/api/icons", iconRoutes);
 app.use("/api/weather", weatherRoutes);
+app.get("/ping", (req, res) => {
+  res.send("Server is alive!");
+});
 
 mongoose
   .connect(process.env.MONGO_URI, {
