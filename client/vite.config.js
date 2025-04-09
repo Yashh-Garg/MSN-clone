@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: process.env.PORT || 5173,
-    host: true
+    host: true,
+    allowedHosts: ['msn-clone-frontend.onrender.com'] //for Render.com
   }
 })
