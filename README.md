@@ -20,8 +20,8 @@ msn-clone/
 ```
 ## 🖼️ Preview
 
-![MSN Clone Home Screenshot](./assets/Home.png)
-![MSN Clone AddShortcut Screenshot](./assets/AddShortcut.png)
+![MSN Clone Home Screenshot](./public/assets/Home.png)
+![MSN Clone AddShortcut Screenshot](./public/assets/AddShortcut.png)
 
 
 ## 🛠️ Installation
