@@ -1,4 +1,4 @@
-# 🧩 Project Name
+# 🧩 MSN-Clone
 
 A full-stack application with a Node.js/Express backend and a Vite + React + Tailwind CSS frontend.
 
