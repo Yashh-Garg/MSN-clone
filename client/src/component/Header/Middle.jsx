@@ -4,13 +4,25 @@ import { Plus } from "lucide-react";
 import ShortcutModal from "../Header/ShortcutModal";
 
 export default function Middle() {
-  const scrollRef = useRef(); // Ref for horizontal scrolling
-  const inputRef = useRef(); // Ref for the search input
-  const [search_value, setSearch_Value] = useState(false); // Tracks if search input has content
-  const [ShowModal, setShowModal] = useState(false); // Controls modal visibility
-  const [shortcuts, setShortcuts] = useState([]); // Stores shortcut data from API
+  const scrollRef = useRef();
+  const inputRef = useRef();
+  const [search_value, setSearch_Value] = useState(false);
+  const [ShowModal, setShowModal] = useState(false);
+  const [shortcuts, setShortcuts] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
 
-  // Fetch existing shortcuts from the API on component mount
+  const suggestionList = [
+    "news",
+    "weather",
+    "sports",
+    "technology",
+    "movies",
+    "finance",
+    "health",
+    "games",
+    "education",
+  ];
+
   useEffect(() => {
     fetch("http://localhost:5000/api/icons")
       .then((res) => res.json())
@@ -18,14 +30,13 @@ export default function Middle() {
       .catch((err) => console.error("Failed to load shortcuts", err));
   }, []);
 
-  // Clear the search input
   const clear = () => {
     setSearch_Value(false);
+    setSuggestions([]);
     inputRef.current.value = "";
     inputRef.current.focus();
   };
 
-  // Trigger search if input is not empty
   const search = () => {
     const search_val = inputRef.current.value;
     if (search_val !== "" && search_val !== " ") {
@@ -37,36 +48,50 @@ export default function Middle() {
     }
   };
 
-  // Handle typing and enter key in the search input
-  const input_search = (e) => {
+  const input_search = async (e) => {
     const value = e.target.value;
-    if (e.key === "Enter" && value !== " ") {
+
+    if (e.key === "Enter" && value.trim() !== "") {
       search();
     } else if (value === "") {
       setSearch_Value(false);
+      setSuggestions([]);
     } else {
       setSearch_Value(true);
+
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/suggestions?query=${value}`
+        );
+        const data = await res.json();
+        const keywords = data.map((item) => item.keyword);
+        setSuggestions(keywords);
+      } catch (err) {
+        console.error("Error fetching suggestions:", err);
+      }
     }
   };
 
-  // Scroll shortcut list to the left
+  const handleSuggestionClick = (value) => {
+    inputRef.current.value = value;
+    setSuggestions([]);
+    search();
+  };
+
   const scrollLeft = () => {
     scrollRef.current.scrollBy({ left: -700, behavior: "smooth" });
   };
 
-  // Scroll shortcut list to the right
   const scrollRight = () => {
     scrollRef.current.scrollBy({ left: 700, behavior: "smooth" });
   };
 
-  // Handle deletion of a shortcut
   const handleDelete = async (id) => {
     try {
       const res = await fetch(`http://localhost:5000/api/icons/${id}`, {
         method: "DELETE",
       });
       if (res.ok) {
-        // Remove shortcut from state
         setShortcuts((prev) => prev.filter((item) => item._id !== id));
       } else {
         console.error("Failed to delete shortcut");
@@ -78,7 +103,6 @@ export default function Middle() {
 
   return (
     <div className="rounded-lg p-4">
-      {/* Search Bar */}
       <div className="bg-white relative w-full max-w-3xl mx-auto rounded-full">
         <input
           ref={inputRef}
@@ -88,7 +112,20 @@ export default function Middle() {
           className="w-full h-10 sm:h-12 pl-10 pr-14 text-sm sm:text-base py-2 border border-gray-200 text-gray-700 rounded-full shadow-sm focus:outline-none"
         />
 
-        {/* Search icon */}
+        {suggestions.length > 0 && (
+          <ul className="absolute z-10 left-0 right-0 mr-3 ml-3 -mt-0.5 bg-white/95  border border-gray-200 rounded-md shadow-md max-h-48 overflow-y-auto">
+            {suggestions.map((item, index) => (
+              <li
+                key={index}
+                className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-400 hover:text-white cursor-pointer"
+                onClick={() => handleSuggestionClick(item)}
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
+        )}
+
         <svg
           className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 cursor-pointer"
           xmlns="http://www.w3.org/2000/svg"
@@ -105,7 +142,6 @@ export default function Middle() {
           />
         </svg>
 
-        {/* Clear icon or Co-pilot logo */}
         {search_value ? (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -133,9 +169,7 @@ export default function Middle() {
         )}
       </div>
 
-      {/* Shortcut Icons Section */}
       <div className="relative p-2 rounded-xl mt-6 w-full max-w-4xl mx-auto">
-        {/* Scroll Left Button */}
         <button
           onClick={scrollLeft}
           className="absolute cursor-pointer left-0 top-1/2 -translate-y-1/2 bg-black/60 text-white px-2 py-1 text-sm rounded-full z-10 hover:bg-black"
@@ -143,7 +177,6 @@ export default function Middle() {
           ←
         </button>
 
-        {/* Horizontal scrollable shortcut list */}
         <div className="overflow-hidden">
           <div
             ref={scrollRef}
@@ -161,7 +194,6 @@ export default function Middle() {
           </div>
         </div>
 
-        {/* Scroll Right Button */}
         <button
           onClick={scrollRight}
           className="absolute cursor-pointer right-0 top-1/2 -translate-y-1/2 bg-black/60 text-white px-2 py-1 text-sm rounded-full z-10 hover:bg-black"
@@ -170,7 +202,6 @@ export default function Middle() {
         </button>
       </div>
 
-      {/* Add Shortcut Button */}
       <div className="p-1 rounded-full mt-6 w-full max-w-5xl justify-center flex mx-auto relative">
         <button
           onClick={() => setShowModal(true)}
@@ -180,7 +211,6 @@ export default function Middle() {
           <span className="text-xs mt-1 text-gray-700">Add</span>
         </button>
 
-        {/* Modal for Adding Shortcut */}
         {ShowModal && (
           <ShortcutModal
             setShowModal={setShowModal}
