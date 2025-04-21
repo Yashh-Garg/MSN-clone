@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import weatherRoutes from "./routes/weather.js";
 import iconRoutes from "./routes/iconRoutes.js";
+import suggestionRoutes from "./routes/suggestions.js";
 
 dotenv.config();
 const app = express();
@@ -14,7 +15,7 @@ app.use(express.json());
 
 app.use("/api/icons", iconRoutes);
 app.use("/api/weather", weatherRoutes);
-
+app.use("/api/suggestions", suggestionRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI, {
